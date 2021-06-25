@@ -1,0 +1,56 @@
+import glob
+import os
+
+def main():
+	files = glob.glob('./YOLO_files_ground_truth/*.txt')
+
+	for file in files:
+
+		fileName = file.split('\\')[-1]
+
+		outFile = './mAP/input/ground-truth/' + fileName
+
+		dims = (1104, 800) # Image dimensions
+
+		print('Converting file ' + fileName)
+
+		readFile = open(file, 'r')
+		writeFile = open(outFile, 'w')
+
+		lines = readFile.read().split('\n')
+
+		for line in lines:
+
+			if len(line) != 0:
+
+				# vector in the YOLOv5 format: class x_center y_center width height
+				v = line.split(' ')
+
+				# Inputs in YOLOv5 format
+				inClass = v[0]
+				inXC = float(v[1])
+				inYC = float(v[2])
+				inW = float(v[3])
+				inH = float(v[4])
+
+				# Outputs in mAP format: <class_name> <left> <top> <right> <bottom> [<difficult>]
+
+				XC = int(inXC*dims[0])
+				YC = int(inYC*dims[1])
+
+				semiW = int(inW*dims[0]/2)
+				semiH = int(inH*dims[0]/2)
+
+				left = str(XC - semiW)
+				top = str(YC - semiH)
+				right = str(XC + semiW)
+				bottom = str(YC + semiH)
+
+				outLine = inClass + ' ' + left + ' ' + top + ' ' + right + ' ' + bottom + '\n'
+				writeFile.write(outLine)
+
+		readFile.close()
+		writeFile.close()
+
+if __name__ == '__main__':
+	main()
