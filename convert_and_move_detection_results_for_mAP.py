@@ -4,6 +4,9 @@ import os
 def main():
 	files = glob.glob('../Validation Info/*/labels/*.txt')
 
+	if len(glob.glob('./mAP/input/detection-results/')) == 0:
+		os.mkdir('./mAP/input/detection-results/')
+
 	for file in files:
 
 		fileName = file.split('\\')[-1]
